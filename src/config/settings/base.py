@@ -21,6 +21,28 @@ _raw_hosts = os.getenv("DJANGO_ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [] if DEBUG else [h.strip() for h in _raw_hosts.split(",") if h.strip()]
 
 # --------------------------------------------------------------------
+# AI / OpenAI（integrations/openai で参照する設定）
+# --------------------------------------------------------------------
+# 方針:
+# - APIキー・モデル・タイムアウト・リトライ・機能ON/OFFを settings に集約
+# - views からは直接触らず、services -> integrations 経由で参照する
+
+# AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
+
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+# OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+
+# タイムアウトは短め推奨（Hackathonは「落ちない」優先）
+# OPENAI_TIMEOUT_SECONDS = int(os.getenv("OPENAI_TIMEOUT_SECONDS", "15"))
+
+# 失敗時のリトライ回数（課金・レート制限・体感待ち時間のバランス）
+# OPENAI_MAX_RETRIES = int(os.getenv("OPENAI_MAX_RETRIES", "2"))
+
+# 任意: 1日あたりの擬似トークン予算（超えたらAIを使わない運用）
+# AI_DAILY_BUDGET_TOKENS = int(os.getenv("AI_DAILY_BUDGET_TOKENS", "20000"))
+
+
+# --------------------------------------------------------------------
 # Application definition
 # --------------------------------------------------------------------
 INSTALLED_APPS = [

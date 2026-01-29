@@ -20,4 +20,10 @@ urlpatterns = [
 
     # teams
     path("teams/", include("apps.teams.urls")),
+
+    # quests
+    path("quests/", include("apps.quests.urls")),
+
+    # notifications
+    path("notifications/", include("apps.notifications.urls")),
 ]
