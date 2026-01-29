@@ -1,6 +1,6 @@
 # src/apps/accounts/views.py
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.http import require_POST
 
 def login_view(request):
     """
@@ -36,6 +36,7 @@ def signup_view(request):
     pass
 
 @login_required
+@require_POST
 def logout_view(request):
     """
     ログアウト
