@@ -33,11 +33,23 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # Project apps (src/apps/ 配下)
-    "apps.accounts",
+    "apps.accounts.apps.AccountsConfig",
     "apps.teams",
     "apps.quests",
     "apps.notifications",
 ]
+
+# --------------------------------------------------------------------
+# Auth (Custom User)
+# --------------------------------------------------------------------
+# - カスタムUserを使う宣言。初回 migrate 前に必ず設定すること。
+AUTH_USER_MODEL = "accounts.User"
+
+# （任意）ログイン導線（Django標準のlogin_requiredなどが参照）
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/auth/login/"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
