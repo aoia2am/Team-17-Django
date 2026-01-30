@@ -1,6 +1,11 @@
 # src/apps/accounts/views.py
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+
+from .forms import LoginForm, SignupForm
+from .models import User
 
 def login_view(request):
     """
@@ -16,7 +21,22 @@ def login_view(request):
     # - from django.contrib.auth import authenticate, login
     # - GET: form表示 / POST: form検証→authenticate→login→redirect
     """
-    pass
+    form = LoginForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        email = form.cleaned_data["email"]
+        password = form.cleaned_data["password"]
+
+        # USERNAME_FIELD = "email" のため username=email
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("/")
+        else:
+            form.add_error(None, "メールアドレスまたはパスワードが正しくありません")
+
+    return render(request, "auth/login.html", {"form": form})
 
 def signup_view(request):
     """
