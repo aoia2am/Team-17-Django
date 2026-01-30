@@ -23,13 +23,20 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 
-# from .services import TeamService
-# service = TeamService()
+from typing import Union,Optional
+
+from .models import Team
+from .services import TeamService
+
+service=TeamService()
 
 # -----------------------------
 # Helpers（共通ガード）
 # -----------------------------
-def _get_my_team_id_or_none(user) -> int | None:
+
+
+def _get_my_team_id_or_none(user) -> Union[int, None]:
+
     """
     自分の所属チームIDを返す（未所属なら None）
 
@@ -40,11 +47,9 @@ def _get_my_team_id_or_none(user) -> int | None:
     membership = getattr(user, "team_membership", None)
     return membership.team_id if membership else None
 
-
-def _redirect_to_team_entry(request, reason: str | None = None):
+def _redirect_to_team_entry(request, reason: Optional[str]=None):
     """
     未所属ユーザーを「作成 or 参加」導線へ誘導する。
-
     TODO（チーム方針でどちらに寄せるか決める）:
     - 最初は team_join に誘導する
     - あるいは onboarding（作る/参加する選択画面）へ誘導する
@@ -85,8 +90,24 @@ def team_create_view(request):
     # - try/except ValidationError
     # - messages.success / messages.error を適切に使う
     """
-    pass
+    # チーム新規作成画面
+    # すでに所属している場合は詳細画面へ
+    my_team_id=_get_my_team_id_or_none(request.user)
+    if my_team_id:
+        return redirect("teams:detail",team_id=my_team_id)
+    
+    if request.method=="POST":
+        name=request.POST.get("name")
+        try:
+            team=service.create_team(owner=request.user,name=name)
+            messages.success(request,f"チーム「{team.name}」を作成しました！")
+            return redirect("teams:detail",team_id=team.id)
+        except ValidationError as e:
+            # 辞書形式のエラーメッセージにも対応
+            msg = e.message_dict.get('__all__', [e.message])[0] if hasattr(e, 'message_dict') else e.message
+            messages.error(request,msg)
 
+    return render(request, "onboarding/team_create.html")
 
 @login_required
 def team_join_view(request):
@@ -116,11 +137,27 @@ def team_join_view(request):
     # - service.join_team_by_code(...)
     # - messages.success / messages.error
     """
-    pass
+    # チーム参加画面
+    my_team_id=_get_my_team_id_or_none(request.user)
+    if my_team_id:
+        return redirect("teams:detail",team_id=my_team_id)
+    
+    if request.method == "POST":
+        code=request.POST.get("code")
+        try:
+            # Service を利用して参加
+            result = service.join_team_by_code(user=request.user,code=code)
+            messages.success(request,f"チーム「{result.team.name}」を参加しました！")
+            return redirect("teams:detail",team_id=result.team.id)
+        except ValidationError as e:
+            msg = e.message_dict.get('__all__', [e.message])[0] if hasattr(e, 'message_dict') else e.message
+            messages.error(request,msg)
 
+    # return render(request,"onboarding/team_join.html")
 
 @login_required
 def team_detail_view(request, team_id: int):
+
     """
     チーム詳細表示（ダッシュボード想定）
 
@@ -145,8 +182,19 @@ def team_detail_view(request, team_id: int):
     # - request.user が所属しているチームかを確認
     # - context に team を渡す
     """
-    pass
 
+    my_team_id=_get_my_team_id_or_none(request.user)
+    if my_team_id is None:
+        return _redirect_to_team_entry(request,"チームに所属していません。")
+    
+    if my_team_id != team_id:
+        messages.error(request,f"他のチームの情報は閲覧できません。")
+        return redirect("teams:detail",team_id=my_team_id)
+
+    from django.shortcuts import get_object_or_404
+    team=get_object_or_404(Team,id=team_id)
+
+    # return render(request,"teams/detail.html",{"team":team})
 
 @login_required
 @require_POST
@@ -172,8 +220,14 @@ def invite_regenerate_view(request, team_id: int):
     # - service.regenerate_invite(...)
     # - messages.success / messages.error
     """
-    pass
-
+    try:
+        service.regenerate_invite(team_id=team_id,actor=request.user)
+        messages.success(request,"招待コードを生成しました。")
+    except ValidationError as e:
+        messages.error(request,e.message)
+    except Exception:
+        messages.error(request,"再生成に失敗しました。")
+    return redirect("teams:detail",team_id=team_id)
 
 @login_required
 @require_POST
@@ -195,4 +249,9 @@ def invite_deactivate_view(request, team_id: int):
     # TODO:
     # - service.deactivate_invite(...)
     """
-    pass
+    try:
+        service.deactivate_invite(team_id=team_id,actor=request.user)
+        messages.success(request,"招待コードを無効化しました。")
+    except ValidationError as e:
+        messages.error(request,e.message)
+    return redirect("teams:detail",team_id=team_id)
