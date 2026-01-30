@@ -105,6 +105,7 @@ class DailyQuestSet(models.Model):
     generated_by = models.CharField(max_length=10, default="logic")
 
     created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "quests_daily_set"
@@ -112,11 +113,12 @@ class DailyQuestSet(models.Model):
             models.UniqueConstraint(fields=["team", "date"], name="uq_daily_set_team_date"),
         ]
         indexes = [
-            models.Index(fields=["date", "team"]),
+            models.Index(fields=["team", "date"]),
+            models.Index(fields=["date"]),
         ]
 
     def __str__(self) -> str:
-        return f"DailyQuestSet(team={self.team_id}, date={self.date})"
+        return f"DailyQuestSet(team={self.team_id}, date={self.date}, diff={self.difficulty})"
 
 
 class DailyQuestItem(models.Model):
@@ -138,9 +140,12 @@ class DailyQuestItem(models.Model):
     # 並び順（AIっぽい演出で順序を変える等）
     sort_order = models.PositiveSmallIntegerField(default=0)
 
+    created_at = models.DateTimeField(default=timezone.now)
+
     class Meta:
         db_table = "quests_daily_item"
         constraints = [
+            models.UniqueConstraint(fields=["daily_set", "sort_order"], name="uq_daily_item_set_sort"),
             models.UniqueConstraint(fields=["daily_set", "quest"], name="uq_daily_item_set_quest"),
         ]
         indexes = [
@@ -148,7 +153,7 @@ class DailyQuestItem(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"DailyQuestItem(set={self.daily_set_id}, quest={self.quest_id})"
+        return f"DailyQuestItem(set={self.daily_set_id}, quest={self.quest_id}, order={self.sort_order})"
 
 
 class QuestCompletion(models.Model):
