@@ -53,7 +53,26 @@ def signup_view(request):
     # - User.objects.create_user(...)
     # - login(request, user)
     """
-    pass
+    form = SignupForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        email = form.cleaned_data["email"]
+        display_name = form.cleaned_data["display_name"]
+        password = form.cleaned_data["password1"]
+
+        # email 重複チェック
+        if User.objects.filter(email=email).exists():
+            form.add_error("email", "このメールアドレスは既に登録されています")
+        else:
+            user = User.objects.create_user(
+                email=email,
+                password=password,
+                display_name=display_name,
+            )
+            login(request, user)
+            return redirect("/")
+
+    return render(request, "auth/signup.html", {"form": form})
 
 @login_required
 @require_POST
@@ -75,4 +94,5 @@ def logout_view(request):
     # - logout(request)
     # - redirect(LOGOUT_REDIRECT_URL)
     """
-    pass
+    logout(request)
+    return redirect("/auth/login/")
