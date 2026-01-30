@@ -14,6 +14,10 @@ Quests Views（MVP）
 - 未所属ユーザーは teams の entry（join/create）へ誘導する
 - quests はチーム前提のため、未所属は来ないのが理想だが保険で守る
 - 破壊的操作（達成）は POST のみ（@require_POST）
+
+このviewsの狙い（後輩向け）:
+- 「どのServiceを呼ぶか」「どうテンプレに渡すか」「エラー時どこへ戻すか」を理解する
+- models を直接触らずに機能を成立させる（レイヤ分離の練習）
 """
 
 from __future__ import annotations
@@ -24,15 +28,27 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-# TODO:
-# - from .services import QuestService
-# - service = QuestService()
+# TODO(後輩):
+# - Team の参照（※更新はしない）
+#   from apps.teams.models import Team
+#
+# - Serviceの利用（更新ロジックは service に閉じ込める）
+#   from .services import QuestService
+#   service = QuestService()
 
-# TODO:
+# TODO(後輩):
 # templates:
 # - templates/quests/today.html
+#   context: team, daily_set, items, difficulty, generated_by
+#
 # - templates/quests/progress.html
+#   context: team, daily_set, progress_items
+#   progress_items は TodayProgressResult.items（ProgressItemの配列）
+#   ProgressItem: daily_item / completed_count / member_count / is_completed_by_me
+#
 # - templates/quests/mvp.html
+#   context: team, daily_set, mvp
+#   mvp は TodayMvpResult（user/total_points/first_completed_at/daily_set）
 
 
 # -----------------------------
@@ -60,6 +76,24 @@ def _redirect_to_team_entry(request, reason: str | None = None):
     return redirect("teams:join")
 
 
+def _flash_validation_error(request, e: ValidationError, fallback: str):
+    """
+    ValidationError を flash message に落とすヘルパ。
+
+    NOTE:
+    - service は ValidationError({"unlock": "..."} ) のように dict を返すことがある
+    - その場合、最初のメッセージだけ拾って表示する（MVPは簡潔でOK）
+    """
+    msg = fallback
+    if hasattr(e, "message_dict") and e.message_dict:
+        # e.message_dict: {"unlock": ["..."], ...}
+        try:
+            msg = next(iter(e.message_dict.values()))[0]
+        except Exception:
+            msg = fallback
+    messages.error(request, msg)
+
+
 # -----------------------------
 # Views
 # -----------------------------
@@ -74,37 +108,44 @@ def today_view(request):
         2) QuestService.get_or_create_today_set(team=..., user=request.user)
            - 「日付が変わればリセット」= DailyQuestSet(date=今日) が無ければ作る
            - 「4つ全部達成OK」= 1日1回制限はかけない（Completion は item×user の重複防止のみ）
+           - 「2人以上で解放」= 2人未満なら ValidationError({"unlock": ...})
         3) templates/quests/today.html に渡して表示
 
-    UI要件（あなたの追加機能）:
+    UI要件:
     - クエストをタップ → Completed? Yes/No モーダル
       - Yes → POST /quests/complete/<daily_item_id>/
       - 成功したら flash message "Quest Clear!!"
-    - 達成済みの見た目（任意だが発表映え）
-      - 「達成済み判定」は service 側で返しても良いし、
-        MVPなら complete を叩いたらメッセージが出るだけでも成立する
-
-    TODO（共同開発者向け）:
-    - Team を取得する（TeamModel は services 側に寄せてもOK）
-    - service.get_or_create_today_set(...) を呼ぶ
-    - context: team / daily_set / items / difficulty / generated_by などを渡す
-    - ValidationError は messages.error → teams:detail へ戻す
     """
     my_team_id = _get_my_team_id_or_none(request.user)
     if my_team_id is None:
         return _redirect_to_team_entry(request, "クエストを見るには、まずチームに参加してください。")
 
     try:
-        # TODO:
-        # - team を取得（Team.objects.get(id=my_team_id)）
-        # - result = service.get_or_create_today_set(team=team, user=request.user)
-        # - return render(request, "quests/today.html", context)
-
+        # TODO(後輩):
+        # 1) Team を参照で取得（更新はしない）
+        # team = Team.objects.get(id=my_team_id)
+        #
+        # 2) service を呼ぶ（今日のセットを固定）
+        # result = service.get_or_create_today_set(team=team, user=request.user)
+        #
+        # 3) テンプレに渡す（最低限）
+        # context = {
+        #     "team": team,
+        #     "daily_set": result.daily_set,
+        #     "items": result.items,               # DailyQuestItem の配列
+        #     "difficulty": result.difficulty,     # "easy"/"medium"/"hard"
+        #     "generated_by": result.generated_by, # "logic"/"ai"
+        # }
+        # return render(request, "quests/today.html", context)
         pass
 
-    except ValidationError:
-        messages.error(request, "クエストを表示できませんでした。")
+    except ValidationError as e:
+        # 代表例:
+        # - unlock: 2人未満で解放されていない
+        # - permission: 所属外アクセス（横読み防止）
+        _flash_validation_error(request, e, "クエストを表示できませんでした。")
         return redirect("teams:detail", team_id=my_team_id)
+
     except Exception:
         # デモで落とさない（詳細はログに出す想定）
         messages.error(request, "予期しないエラーが発生しました。")
@@ -121,37 +162,37 @@ def complete_view(request, daily_item_id: int):
     - POST:
         1) 未所属なら teams:join へ
         2) QuestService.complete(user=request.user, daily_item_id=...)
-        - 4つ全部達成OK
-        - 既に達成済みなら「達成済み」として扱う（例外にしない/しても良いが一貫性が大事）
-        - ポイント加算は Team 側に保持（累計が保持される）
-        - Notification 連携（member_completed / team_rank_up 等）は service 側で行う
-        3) 成功:
-        - messages.success("Quest Clear!!")（発表映え）
-        - quests:today へ戻す
-
-    失敗時:
-    - ValidationError（所属外アクセス/存在しない/日付違い等）
-    → messages.error → quests:today へ
-
-    TODO（共同開発者向け）:
-    - service.complete(...) の返り値設計に合わせて
-    - gained_points を見て success/info を出し分けても良い
+           - 4つ全部達成OK
+           - 既に達成済みなら gained_points=0 を返す（ポイント二重加算防止）
+           - 2人未満なら unlock で ValidationError
+        3) messages:
+           - gained_points>0: success "Quest Clear!! +{pt}pt"
+           - gained_points==0: info "達成済みです"
+           - ランクアップがあれば info "Rank Up!! X → Y"
+        4) quests:today へ戻す
     """
     my_team_id = _get_my_team_id_or_none(request.user)
     if my_team_id is None:
         return _redirect_to_team_entry(request, "達成するには、まずチームに参加してください。")
 
     try:
-        # TODO:
-        # - result = service.complete(user=request.user, daily_item_id=daily_item_id)
-        # - messages.success(request, "Quest Clear!!")
-        # - return redirect("quests:today")
-
+        # TODO(後輩):
+        # result = service.complete(user=request.user, daily_item_id=daily_item_id)
+        #
+        # if result.gained_points > 0:
+        #     messages.success(request, f"Quest Clear!! +{result.gained_points}pt")
+        #     if result.rank_before != result.rank_after:
+        #         messages.info(request, f"Team Rank Up!! {result.rank_before} → {result.rank_after}")
+        # else:
+        #     messages.info(request, "このクエストは達成済みです。")
+        #
+        # return redirect("quests:today")
         pass
 
-    except ValidationError:
-        messages.error(request, "達成できませんでした。")
+    except ValidationError as e:
+        _flash_validation_error(request, e, "達成できませんでした。")
         return redirect("quests:today")
+
     except Exception:
         messages.error(request, "予期しないエラーが発生しました。")
         return redirect("quests:today")
@@ -166,32 +207,37 @@ def progress_view(request):
     - GET:
         1) 未所属なら teams:join へ
         2) QuestService.get_today_progress(team=..., user=request.user)
-        - 今日の DailyQuestSet を前提に、各 DailyQuestItem の達成人数を集計
-        3) templates/quests/progress.html に渡して表示
+           - 今日のセット（DailyQuestSet）を前提に、各 DailyQuestItem の達成人数を集計
+           - ProgressItem を返す（completed_count / member_count / is_completed_by_me）
+        3) templates/quests/progress.html に渡す
 
     表示要件:
     - 達成人数を星にして表示（例: 5人中3人なら ★★★☆☆）
-    - 4件それぞれに表示できると発表映え
-
-    TODO（共同開発者向け）:
-    - service.get_today_progress(...) を作る（items + completed_count + member_count）
-    - context に渡してテンプレ側で星表示
+      → テンプレ側で:
+        stars_filled = completed_count
+        stars_empty  = member_count - completed_count
     """
     my_team_id = _get_my_team_id_or_none(request.user)
     if my_team_id is None:
         return _redirect_to_team_entry(request, "進捗を見るには、まずチームに参加してください。")
 
     try:
-        # TODO:
-        # - team を取得
-        # - progress = service.get_today_progress(team=team, user=request.user)
-        # - return render(request, "quests/progress.html", context)
-
+        # TODO(後輩):
+        # team = Team.objects.get(id=my_team_id)
+        # progress = service.get_today_progress(team=team, user=request.user)
+        #
+        # context = {
+        #     "team": team,
+        #     "daily_set": progress.daily_set,
+        #     "progress_items": progress.items,  # ProgressItem の配列
+        # }
+        # return render(request, "quests/progress.html", context)
         pass
 
-    except ValidationError:
-        messages.error(request, "進捗を表示できませんでした。")
+    except ValidationError as e:
+        _flash_validation_error(request, e, "進捗を表示できませんでした。")
         return redirect("teams:detail", team_id=my_team_id)
+
     except Exception:
         messages.error(request, "予期しないエラーが発生しました。")
         return redirect("teams:detail", team_id=my_team_id)
@@ -202,38 +248,42 @@ def mvp_view(request):
     """
     MVP表示（最もポイントを稼いだ人 / 同値は最速達成）。
 
-    MVPの集計期間（おすすめ）:
+    MVPの集計期間:
     - 「今日（DailyQuestSet.date=今日）」の合計ポイント
-    → 発表で説明しやすく、ユーザーも納得しやすい
 
     仕様（MVP）:
     - GET:
         1) 未所属なら teams:join へ
         2) QuestService.get_today_mvp(team=..., user=request.user)
-        - 今日の達成ログを集計
-        - 合計ポイントが最大のユーザー
-        - 同値の場合は最も早く達成したユーザー
-        3) templates/quests/mvp.html に渡して表示
+           - 今日の達成ログを集計
+           - 合計ポイントが最大のユーザー
+           - 同値の場合は最も早く達成したユーザー
+        3) templates/quests/mvp.html に渡す
 
-    TODO（共同開発者向け）:
-    - service.get_today_mvp(...) を作る
-    - 戻り値は dict でも dataclass でも良いが、テンプレが扱いやすい形にする
+    NOTE:
+    - まだ誰も達成していない日は mvp.user が None の想定
     """
     my_team_id = _get_my_team_id_or_none(request.user)
     if my_team_id is None:
         return _redirect_to_team_entry(request, "MVPを見るには、まずチームに参加してください。")
 
     try:
-        # TODO:
-        # - team を取得
-        # - mvp = service.get_today_mvp(team=team, user=request.user)
-        # - return render(request, "quests/mvp.html", {"mvp": mvp})
-
+        # TODO(後輩):
+        # team = Team.objects.get(id=my_team_id)
+        # mvp = service.get_today_mvp(team=team, user=request.user)
+        #
+        # context = {
+        #     "team": team,
+        #     "daily_set": mvp.daily_set,
+        #     "mvp": mvp,  # TodayMvpResult
+        # }
+        # return render(request, "quests/mvp.html", context)
         pass
 
-    except ValidationError:
-        messages.error(request, "MVPを表示できませんでした。")
+    except ValidationError as e:
+        _flash_validation_error(request, e, "MVPを表示できませんでした。")
         return redirect("teams:detail", team_id=my_team_id)
+
     except Exception:
         messages.error(request, "予期しないエラーが発生しました。")
         return redirect("teams:detail", team_id=my_team_id)

@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Iterable, Optional
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, models
+from django.db.models import F, Min, Sum
 from django.utils import timezone
 
 from apps.notifications.services import NotificationService
@@ -58,6 +59,25 @@ class CompleteResult:
     rank_before: str
     rank_after: str
 
+@dataclass(frozen=True)
+class ProgressItem:
+    daily_item: DailyQuestItem
+    completed_count: int
+    member_count: int
+    is_completed_by_me: bool
+
+@dataclass(frozen=True)
+class TodayProgressResult:
+    daily_set: DailyQuestSet
+    items: list[ProgressItem]
+
+@dataclass(frozen=True)
+class TodayMvpResult:
+    user: "AbstractUser" | None
+    total_points: int
+    first_completed_at: timezone.datetime | None
+    daily_set: DailyQuestSet | None
+
 
 class QuestService:
     """
@@ -69,6 +89,8 @@ class QuestService:
     3) チーム累計ポイント加算（Team.total_points）
     4) ランク更新（Team.rank）
     5) 通知連携（達成/ランクアップ）
+    6) 進捗（各 item の達成人数）
+    7) MVP（今日の合計pt最大、同点は最速）
     """
 
     def __init__(self) -> None:
@@ -83,6 +105,16 @@ class QuestService:
         """
         if not TeamMember.objects.filter(team_id=team_id, user=user).exists():
             raise ValidationError({"permission": "あなたはこのチームのメンバーではありません"})
+    
+    def assert_unlocked(self, *, team: Team) -> None:
+        """
+        要件: 2人以上でクエスト解放。
+        """
+        if not team.is_quest_unlocked:
+            raise ValidationError({"unlock": "クエストは2人以上で解放されます（仲間を招待してください）"})
+
+        if team.is_full and team.member_count > team.max_members:
+            raise ValidationError({"team": "チーム人数が上限を超えています"})
 
     # ------------------------------------------------------------
     # Difficulty decision (Rank -> Difficulty)
@@ -149,6 +181,7 @@ class QuestService:
         - AI/ロジックどちらでも、DailyQuestSetに固定して“おすすめが揺れない”ようにする
         """
         self.assert_member(team_id=team.id, user=user)
+        self.assert_unlocked(team=team)
 
         today = timezone.localdate()  # JST想定（settings.TIME_ZONE が Asia/Tokyo ならOK）
         difficulty = self.decide_daily_difficulty_by_rank(team_rank=team.rank)
@@ -162,10 +195,10 @@ class QuestService:
                 .order_by("sort_order")
             )
             return TodaySetResult(
-                daily_set=qs,
-                items=items,
-                generated_by=qs.generated_by,
-                difficulty=qs.difficulty,
+                qs,
+                items,
+                qs.generated_by,
+                qs.difficulty
             )
 
         # 無ければ生成（並行実行に備えて transaction / unique constraint を吸収）
@@ -267,9 +300,8 @@ class QuestService:
 
                 # AIは「idの配列」を返す想定（順序も含める）
                 result = client.generate_json(prompt=RECOMMEND_QUESTS_PROMPT, data=payload)
-                picked_ids = result.get("quest_ids", [])
-                picked_ids = [int(x) for x in picked_ids if str(x).isdigit()]
-
+                picked_ids = [int(x) for x in result.get("quest_ids", []) if str(x).isdigit()]
+                
                 # 4件に整える（足りなければロジック補完でもOKだが、まずは厳密に）
                 if len(picked_ids) < 4:
                     raise RuntimeError("AI returned insufficient quest ids")
@@ -351,6 +383,7 @@ class QuestService:
 
         # 2) 所属チェック（横読み防止）
         self.assert_member(team_id=team.id, user=user)
+        self.assert_unlocked(team=team)
 
         # 3) 「今日のセット」以外は弾く（“日付変わればリセット”を厳密にする）
         today = timezone.localdate()
@@ -412,4 +445,87 @@ class QuestService:
             team_total_points=team_locked.total_points,
             rank_before=rank_before,
             rank_after=rank_after,
+        )
+    
+    # ------------------------------------------------------------
+    # Progress (today)
+    # ------------------------------------------------------------
+    def get_today_progress(self, *, team: Team, user: "AbstractUser") -> TodayProgressResult:
+        self.assert_member(team_id=team.id, user=user)
+        self.assert_unlocked(team=team)
+
+        today_set = self.get_or_create_today_set(team=team, user=user).daily_set
+
+        items = list(
+            DailyQuestItem.objects.filter(daily_set=today_set)
+            .select_related("quest", "daily_set")
+            .order_by("sort_order")
+        )
+
+        member_count = int(team.member_count)
+
+        # 達成人数（itemごと）
+        counts = {
+            row["daily_item_id"]: int(row["c"])
+            for row in (
+                QuestCompletion.objects.filter(daily_item__in=items)
+                .values("daily_item_id")
+                .annotate(c=models.Count("id"))
+            )
+        }
+
+        # 自分が達成済みか
+        my_done_ids = set(
+            QuestCompletion.objects.filter(daily_item__in=items, user=user).values_list("daily_item_id", flat=True)
+        )
+
+        progress_items: list[ProgressItem] = []
+        for it in items:
+            progress_items.append(
+                ProgressItem(
+                    daily_item=it,
+                    completed_count=counts.get(it.id, 0),
+                    member_count=member_count,
+                    is_completed_by_me=(it.id in my_done_ids),
+                )
+            )
+
+        return TodayProgressResult(daily_set=today_set, items=progress_items)
+    
+    # ------------------------------------------------------------
+    # MVP (today)
+    # ------------------------------------------------------------
+    def get_today_mvp(self, *, team: Team, user: "AbstractUser") -> TodayMvpResult:
+        self.assert_member(team_id=team.id, user=user)
+        self.assert_unlocked(team=team)
+
+        # 今日セットがないと集計できないので、存在保証（表示が揺れない）
+        today_set = self.get_or_create_today_set(team=team, user=user).daily_set
+
+        # 今日のこのチームの達成ログに限定
+        qs = (
+            QuestCompletion.objects.filter(daily_item__daily_set=today_set)
+            .values("user_id")
+            .annotate(
+                total_points=Sum(F("daily_item__quest__points")),
+                first_completed_at=Min("completed_at"),
+            )
+            .order_by("-total_points", "first_completed_at")
+        )
+
+        top = qs.first()
+        if not top:
+            return TodayMvpResult(user=None, total_points=0, first_completed_at=None, daily_set=today_set)
+        
+        # user取得（テンプレで表示できる形に）
+        # ※ display_name を使う想定ならテンプレで getattr する
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        mvp_user = User.objects.filter(id=top["user_id"]).first()
+
+        return TodayMvpResult(
+            user=mvp_user,
+            total_points=int(top["total_points"] or 0),
+            first_completed_at=top["first_completed_at"],
+            daily_set=today_set,
         )
