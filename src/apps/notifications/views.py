@@ -24,6 +24,9 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
+from .services import NotificationService
+
+service = NotificationService()
 # TODO:
 # - services を import して service を生成する（views は service を呼ぶだけ）
 # from .services import NotificationService
@@ -130,7 +133,12 @@ def notification_list_view(request, team_id: int):
         # return render(request, "notifications/list.html", context)
 
         # 仮置き（views 実装時に削除）
-        return render(request, "notifications/list.html", {"feed": [], "team_id": team_id})
+        feed = service.list_feed(team_id=team_id, user=request.user)
+        context = {
+            "feed": feed,
+            "team_id": team_id,
+        }
+        return render(request, "notifications/list.html", context)
 
     except ValidationError:
         messages.error(request, "このページは閲覧できません。")
@@ -167,7 +175,7 @@ def notification_read_view(request, notification_id: int):
         # return redirect("notifications:list", team_id=my_team_id)
 
         # 仮置き（views 実装時に削除）
-        messages.success(request, "既読にしました（仮）")
+        service.mark_read(notification_id=notification_id, user=request.user)
         return redirect("notifications:list", team_id=my_team_id)
 
     except ValidationError:
@@ -204,7 +212,8 @@ def notification_read_all_view(request, team_id: int):
         # return redirect("notifications:list", team_id=team_id)
 
         # 仮置き（views 実装時に削除）
-        messages.success(request, "全件既読にしました（仮）")
+        created_count = service.mark_all_read(team_id=team_id, user=request.user)
+        messages.success(request, f"{created_count}件を既読にしました")
         return redirect("notifications:list", team_id=team_id)
 
     except ValidationError:
