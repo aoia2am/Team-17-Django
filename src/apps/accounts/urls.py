@@ -9,14 +9,16 @@ accounts app の URL 定義（入口だけ確定させる）
 - エラーが起きないように下記はコメントアウト状態にしています
 """
 
+from . import views
+
 app_name = "accounts"
 
 urlpatterns = [
     # 認証系
-    # path("login/", views.login_view, name="login")
-    # path("signup/", views.signup_view, name="signup")
-    # path("logout/", views.logout_view, name="logout")
+    path("login/", views.login_view, name="login"),
+    path("signup/", views.signup_view, name="signup"),
+    path("logout/", views.logout_view, name="logout"),
 
     # onboarding
-    # path("onboarding/welcome/", views.welcome, name="welcome")
+    path("onboarding/welcome/", views.welcome, name="welcome"),
 ]

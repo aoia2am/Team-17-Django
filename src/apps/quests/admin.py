@@ -8,7 +8,7 @@ from .models import Quest, DailyQuestSet, DailyQuestItem, QuestCompletion
 class QuestAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "difficulty", "category", "points", "is_active", "created_at")
     list_filter = ("difficulty", "category", "is_active")
-    search_fields = ("name")
+    search_fields = ("name",)
     ordering = ("difficulty", "category", "name")
 
 
