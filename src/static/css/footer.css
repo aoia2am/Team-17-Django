@@ -50,3 +50,26 @@ body {
 	background-color: red;
 	border-radius: 50%;
 }
+
+/* ===== Tablet & Large Smartphone (max-width: 767px) ===== */
+@media screen and (max-width: 767px) {
+	.header {
+		padding: 12px 14px;
+	}
+
+	.header-inner {
+		gap: 9px;
+	}
+
+	.logo-icon {
+		width: 26px;
+		height: 26px;
+		border-width: 3px;
+	}
+
+	.logo-text {
+		font-size: 15px;
+		padding: 5px 9px;
+		letter-spacing: 0.8px;
+	}
+}

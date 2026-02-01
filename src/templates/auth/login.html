@@ -46,7 +46,7 @@ accounts app の login view と 1:1 で対応する。
 
 			<form method="POST" action="{% url 'login' %}" class="form-container">
 				{% csrf_token %}
-				<h1 class="page-title">Login</h1>
+				<h1 class="page-title">Log in</h1>
 
 				<div class="field-group">
 					<label for="id_email">Email</label>
@@ -59,11 +59,11 @@ accounts app の login view と 1:1 で対応する。
 				</div>
 
 				<div class="action-area">
-					<button type="submit" class="btn-login">login</button>
+					<button type="submit" class="btn-login">log in</button>
 				</div>
 
 				<div class="link-area">
-					<a href="{% url 'signup' %}" class="link-signup">Siginup</a>
+					<a href="{% url 'signup' %}" class="link-signup">Signup</a>
 				</div>
 			</form>
 		</div>
