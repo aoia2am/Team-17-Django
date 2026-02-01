@@ -1,6 +1,6 @@
 # src/apps/accounts/views.py
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods, require_POST
+from django.views.decorators.http import require_http_methods, require_POST, require_GET
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
@@ -100,3 +100,7 @@ def logout_view(request):
     """
     logout(request)
     return redirect("accounts:login")
+
+@require_GET
+def welcome(request):
+    return render(request, "onboarding/welcome.html")
