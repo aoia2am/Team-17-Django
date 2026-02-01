@@ -61,3 +61,37 @@
 	font-size: 16px;
 	font-weight: bold;
 }
+
+/* --- レスポンシブ対応 (767px以下) --- */
+@media screen and (max-width: 767px) {
+	.quest-section {
+		padding: 12px;
+	}
+
+	.quest-title {
+		font-size: 18px;
+		margin-bottom: 10px;
+	}
+
+	.quest-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 10px;
+	}
+
+	.quest-card {
+		padding: 12px;
+		min-height: 80px;
+	}
+
+	.quest-name {
+		font-size: 13px;
+	}
+
+	.quest-difficulty {
+		font-size: 20px;
+	}
+
+	.quest-count {
+		font-size: 15px;
+	}
+}

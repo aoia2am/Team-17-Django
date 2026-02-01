@@ -122,3 +122,45 @@
 	text-align: center;
 	font-size: 14px;
 }
+
+/* --- レスポンシブ対応 (767px以下) --- */
+@media screen and (max-width: 767px) {
+	.progress-section {
+		padding: 12px;
+	}
+
+	.team-title {
+		font-size: 18px;
+		justify-content: center;
+	}
+
+	.progress-area {
+		flex-direction: column;
+		gap: 20px;
+		align-items: center;
+	}
+
+	.progress-bar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.progress-svg {
+		width: 100px;
+		height: 100px;
+	}
+
+	.progress-info {
+		align-items: center;
+		text-align: center;
+	}
+
+	.stars {
+		justify-content: center;
+	}
+
+	.mvp-name {
+		width: 100%;
+		box-sizing: border-box;
+	}
+}
