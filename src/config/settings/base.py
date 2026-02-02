@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "apps.teams.apps.TeamsConfig",        
     "apps.quests.apps.QuestsConfig",
     "apps.notifications.apps.NotificationsConfig",
+    "apps.dashboard.apps.DashboardConfig",
 ]
 
 # --------------------------------------------------------------------
