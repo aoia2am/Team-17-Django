@@ -201,7 +201,7 @@ def progress_view(request):
         #     "progress_items": progress.items,  # ProgressItem の配列
         # }
         # return render(request, "quests/progress.html", context)
-        team = get_object_or_404(Team, id=my_team_id)
+        team = get_object_or_404(Team, id=my_team_id, is_active=True)
         progress = _service().get_today_progress(team=team, user=request.user)
 
         context = {
