@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found | G-BASE</title>
+    <link rel="stylesheet" href="{% static 'css/errors.css' %}">
+</head>
+<body>
+{% include "components/header.html" %}
+<div>
+    <div>UserName</div>
+    <div>{{ user_obj.display_name }}</div>
+    
+    <div>Emails</div>
+    
+    <div>{{ user_obj.email }}</div>
+    
+    <form method="post" 
+    action="{% url 'accounts:logout' %}"
+    onsubmit="return confirm('ログアウトしますか？');">
+    {% csrf_token %}
+    <button type="submit">Log out →</button> 
+</form>
+</div>
+
+</body>
+</html>

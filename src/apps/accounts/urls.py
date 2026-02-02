@@ -21,4 +21,7 @@ urlpatterns = [
 
     # onboarding
     path("onboarding/welcome/", views.welcome, name="welcome"),
+
+    # settings / profile
+    path("settings/", views.settings_view, name="settings"),
 ]

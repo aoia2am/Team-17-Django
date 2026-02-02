@@ -104,3 +104,14 @@ def logout_view(request):
 @require_GET
 def welcome(request):
     return render(request, "onboarding/welcome.html")
+
+@login_required
+@require_GET
+def settings_view(request):
+    """
+    Settings（MVP: 参照のみ）
+    - display_name / email を表示するだけ
+    - 更新はしない（事故ポイントを増やさない）
+    """
+    user: User = request.user  # type: ignore[assignment]
+    return render(request, "accounts/settings.html", {"user_obj": user})
