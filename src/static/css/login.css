@@ -2,7 +2,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	background-color: #1e2736; /* 背景の濃い紺色 */
+	background-color: #1E293B; /* 背景の濃い紺色 */
 	font-family: "Helvetica Neue", Arial, sans-serif;
 	display: flex;
 	justify-content: center;
@@ -29,12 +29,12 @@ body {
 	width: 48px;
 	height: 48px;
 	background-color: transparent;
-	border: 3px solid #f0f8a8; /* ロゴの薄黄色 */
+	border: 3px solid #F7FF78; /* ロゴの薄黄色 */
 	clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
 }
 
 .brand-name {
-	background-color: #f0f8a8;
+	background-color: #F7FF78;
 	color: #1e2736;
 	font-size: 42px;
 	font-weight: 900;
@@ -48,6 +48,7 @@ body {
 	font-weight: 500;
 	text-align: left;
 	margin: 0 0 25px 0;
+	
 }
 
 .field-group {
@@ -93,7 +94,7 @@ body {
 }
 
 .link-signup {
-	color: #f0f8a8;
+	color: #F7FF78;
 	text-decoration: underline;
 	font-size: 26px;
 	font-weight: bold;

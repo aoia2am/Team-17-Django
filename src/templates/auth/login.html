@@ -46,7 +46,13 @@ accounts app の login view と 1:1 で対応する。
 
         <form method="POST" action="{% url 'accounts:login' %}" class="form-container">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
             <h1 class="page-title">Log in</h1>
+            {% if form.errors %}
+            <div class="form-errors">
+                {{ form.errors }}
+            </div>
+            {% endif %}
 
             <div class="field-group">
                 <label for="id_email">Email</label>

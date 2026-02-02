@@ -1,26 +1,75 @@
-<section class="notifications-section">
-	<div class="notification-item">
-		<div class="notification-icon trophy"></div>
-		<div class="notification-text">チーム全員がデイリークエストを達成！</div>
-	</div>
+<!-- 
+以下村瀬記述
+{% if feed %}
+{% for notification in feed %}
+  <div class="notification-item">
+    <span class="notification-icon
+      {% if notification.type == 'member_completed' %}trophy
+      {% elif notification.type == 'daily_ready' %}medal
+      {% elif notification.type == 'team_rank_up' %}trophy
+      {% elif notification.type == 'system' %}handshake
+      {% endif %}
+    "></span>
 
-	<div class="notification-item">
-		<div class="notification-icon trophy"></div>
-		<div class="notification-text">チーム全員がデイリークエストを達成！</div>
-	</div>
+    <span class="notification-text">
+      {{ notification.message }}
+    </span>
+  </div>
+{% endfor %}
+{% else %}
+  <div class="no-notification">
+    通知はまだありません
+  </div>
+{% endif %} -->
 
-	<div class="notification-item">
-		<div class="notification-icon handshake"></div>
-		<div class="notification-text">チームに新しいメンバーが加入！</div>
-	</div>
 
-	<div class="notification-item">
-		<div class="notification-icon medal"></div>
-		<div class="notification-text">今日の最速クエスト達成者になった！</div>
-	</div>
+<!-- 以下小林記述 -->
+ {% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | G-BASE</title>
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+</head>
+<body>
 
-	<div class="notification-item">
-		<div class="notification-icon trophy"></div>
-		<div class="notification-text">チーム全員がデイリークエストを達成！</div>
-	</div>
-</section>
+    {% include "components/header.html" %}
+
+    <main class="container">
+        <div class="notifications-wrapper">
+            <h2 class="page-title">>>Notifications</h2>
+
+            <div class="notification-list">
+                {% if feed %}
+                    {% for notification in feed %}
+                        <div class="notification-item">
+                            <div class="icon-wrapper">
+                                <span class="notification-icon 
+                                    {% if notification.type == 'member_completed' %}trophy
+                                    {% elif notification.type == 'daily_ready' %}medal
+                                    {% elif notification.type == 'team_rank_up' %}rank
+                                    {% elif notification.type == 'system' %}handshake
+                                    {% endif %}
+                                "></span>
+                            </div>
+
+                            <div class="notification-text">
+                                {{ notification.message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-notification">
+                        通知はまだありません
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    {% include "components/footer.html" %}
+
+</body>
+</html>

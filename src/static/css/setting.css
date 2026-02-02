@@ -1,0 +1,105 @@
+@media screen and (max-width: 767px) {
+    .settings-container {
+        padding: 24px 20px;
+        color: #ffffff;
+    }
+    
+    .settings-title {
+        font-size: 22px;
+        margin-bottom: 32px;
+        letter-spacing: 2px;
+    }
+    
+    .settings-group {
+        margin-bottom: 24px;
+    }
+    
+    .settings-label {
+        display: inline-block;
+        margin-bottom: 8px;
+        padding: 4px 8px;
+        border: 1px solid #eaff00;
+        color: #eaff00;
+        font-size: 14px;
+    }
+    
+    .settings-value {
+        background-color: #ffffff;
+        color: #000000;
+        padding: 10px 12px;
+        border-radius: 2px;
+        font-size: 15px;
+    }
+    
+    .logout-area {
+        margin-top: 40px;
+        text-align: right;
+    }
+    
+    .logout-link {
+        color: #ffffff;
+        font-size: 18px;
+        text-decoration: underline;
+    }
+    
+    .logout-link:hover {
+        opacity: 0.8;
+    }
+    
+    .logout-container {
+        padding: 24px 20px;
+        color: #ffffff;
+        text-align: center;
+    }
+    
+    .settings-title {
+        text-align: left;
+        font-size: 22px;
+        margin-bottom: 40px;
+        letter-spacing: 2px;
+    }
+    
+    .logout-message {
+        font-size: 20px;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+    
+    .logout-card {
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 32px;
+        text-align: left;
+    }
+    
+    .logout-card p {
+        margin: 8px 0;
+        font-size: 15px;
+    }
+    
+    .logout-button {
+        background-color: #d90000;
+        color: #ffffff;
+        border: none;
+        padding: 14px 32px;
+        font-size: 18px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .logout-button:hover {
+        opacity: 0.85;
+    }
+    
+    .cancel-area {
+        margin-top: 16px;
+    }
+    
+    .cancel-link {
+        color: #ffffff;
+        font-size: 18px;
+        text-decoration: underline;
+    }
+}

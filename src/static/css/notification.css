@@ -1,58 +1,100 @@
-/* ===== Notifications List ===== */
-
-.notifications-section {
-	color: #ffffff;
+/* ベーススタイル */
+body {
+    background-color: #1a2233;
+    color: #ffffff;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
-/* 1件分 */
+/* 1. 全体を中央に寄せるためのコンテナ */
+.container {
+    width: 100%;
+    display: block; /* FlexではなくBlockにして、中の要素のmargin autoを効かせる */
+    padding: 0;
+    margin: 0;
+}
+
+/* 2. 通知エリア全体を囲む箱（ここを真ん中に置く） */
+.notifications-wrapper {
+    width: 90%;             /* スマホで左右に少し余白を作る */
+    max-width: 500px;       /* PCで広がりすぎないように制限 */
+    margin: 40px auto;      /* これで左右中央に配置される */
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* 中身の要素を中央に */
+}
+
+/* 3. タイトル (>> Notifications) */
+.page-title {
+    width: 100%;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;     /* 文字自体を中央に */
+    margin: 0 0 40px 0;
+    letter-spacing: 2px;
+}
+
+/* 4. 通知リスト */
+.notification-list {
+    width: 100%;            /* wrapper(500px)いっぱいに広げる */
+}
+
+/* 5. 通知アイテム（各行） */
 .notification-item {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	padding: 16px;
-	border-top: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: #2a344a;
+    margin-bottom: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* アイコンとテキストは左から並べる */
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px; /* 少し角を丸める */
 }
 
-/* 最下部の線を再現したい場合 */
-.notification-item:last-child {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+/* アイコンエリア (50x50px) */
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    background-color: #3d475f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* メッセージが長くても潰さない */
 }
 
-/* アイコン共通 */
 .notification-icon {
-	width: 26px;
-	height: 26px;
-	flex-shrink: 0;
-	background-color: #e6f26a;
-	mask-size: contain;
-	mask-repeat: no-repeat;
-	mask-position: center;
-	-webkit-mask-size: contain;
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
+    font-size: 24px;
 }
 
-/* トロフィー */
-.notification-icon.trophy {
-	mask-image: url("/static/icons/trophy.svg");
-	-webkit-mask-image: url("/static/icons/trophy.svg");
-}
-
-/* 握手 */
-.notification-icon.handshake {
-	mask-image: url("/static/icons/handshake.svg");
-	-webkit-mask-image: url("/static/icons/handshake.svg");
-}
-
-/* メダル */
-.notification-icon.medal {
-	mask-image: url("/static/icons/medal.svg");
-	-webkit-mask-image: url("/static/icons/medal.svg");
-}
-
-/* テキスト */
+/* 通知テキスト */
 .notification-text {
-	font-size: 15px;
-	font-weight: bold;
-	line-height: 1.4;
+    font-size: 16px;
+    line-height: 1.4;
+    text-align: left; /* アイテム内の文章は左詰めで読みやすく */
 }
+
+/* 通知がない場合 */
+.no-notification {
+    text-align: center;
+    margin-top: 80px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 18px;
+}
+
+/* --- スマホ対応 (430px基準) --- */
+@media screen and (max-width: 430px) {
+    .notifications-wrapper {
+        margin: 20px auto;
+    }
+    .page-title {
+        font-size: 22px;
+    }
+    .notification-item {
+        padding: 12px;
+    }
+}
+
