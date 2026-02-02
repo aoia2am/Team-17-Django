@@ -1,0 +1,89 @@
+/* 2x2のグリッドレイアウト（左上・右上・左下・右下） */
+.quest-board-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 600px; /* 画面サイズに合わせて調整 */
+    margin: 0 auto;
+}
+
+.quest-card {
+    position: relative;
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(4px); /* 背景を少しぼかすとおしゃれです */
+}
+
+/* 難易度別の色指定（不透明度40%） */
+.quest-card.hard {
+    background-color: rgba(255, 149, 149, 0.4); /* #FF9595 40% */
+}
+.quest-card.normal {
+    background-color: rgba(250, 255, 155, 0.4); /* #FAFF9B 40% */
+}
+.quest-card.easy {
+    background-color: rgba(126, 235, 162, 0.4); /* #7EEBA2 40% */
+}
+
+.quest-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.quest-points {
+    font-size: 14px;
+    font-weight: 800;
+    color: #4f46e5;
+}
+
+.quest-desc {
+    font-size: 12px;
+    color: #555;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* 左下の難易度ラベル */
+.difficulty-label {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* 完了ボタン（右下に配置する例） */
+.quest-action {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
+
+.btn-complete-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-weight: bold;
+    color: #4f46e5;
+}
+
+.done-stamp {
+    color: #ff4757;
+    font-weight: 900;
+    transform: rotate(-15deg);
+    display: block;
+    border: 2px solid #ff4757;
+    padding: 2px 5px;
+    border-radius: 4px;
+}

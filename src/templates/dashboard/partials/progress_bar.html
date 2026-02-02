@@ -1,0 +1,17 @@
+{% load static %}
+
+<link rel="stylesheet" href="../../../static/css/progress.css" />
+<div class="rank-wrapper">
+	<div class="rank-ring">
+		<div class="rank-inner">
+			<div class="rank-letter">{{team.rank}}</div>
+			<div class="rank-point">
+				{% if team.rank == 'A' %}
+      		MAX RANK
+        {% else %}
+          {{ team.total_points }} / {{ next_rank_threshold }} pt
+        {% endif %}
+			</div>
+		</div>
+	</div>
+</div>

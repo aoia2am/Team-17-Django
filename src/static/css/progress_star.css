@@ -1,0 +1,43 @@
+/* 親コンテナの配置 */
+.daily-progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+}
+
+/* 「今日の進捗」ラベル */
+.progress-title {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* 星を横に並べる */
+.stars-row {
+    display: flex;
+    gap: 6px;
+}
+
+.star-icon {
+    width: 32px;
+    height: 32px;
+}
+
+/* 達成済みの星：中身を #F7FF78、外枠を白 */
+.star-icon.filled svg {
+    fill: #F7FF78;
+    stroke: white;
+    stroke-width: 1.5px;
+    paint-order: stroke; /* 枠線を外側に強調 */
+}
+
+/* 未達成の星：外枠のみ白 */
+.star-icon.outline svg {
+    fill: transparent;
+    stroke: white;
+    stroke-width: 1.5px;
+}

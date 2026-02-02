@@ -1,0 +1,51 @@
+.mvp-card-container {
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mvp-label {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+.mvp-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.mvp-icon {
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(0 0 8px rgba(247, 255, 120, 0.4));
+}
+
+.mvp-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mvp-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mvp-points {
+    font-size: 14px;
+    color: #F7FF78;
+    font-weight: bold;
+}
+
+.mvp-empty {
+    font-size: 14px;
+    opacity: 0.6;
+    padding: 10px 0;
+}

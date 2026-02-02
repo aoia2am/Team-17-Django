@@ -1,0 +1,14 @@
+{% load static %}
+<div class="daily-progress-container">
+    <h3 class="progress-title">今日の進捗</h3>
+    <div class="stars-row">
+        {# 1から5までループを回して、達成人数分だけ filled クラスを付与 #}
+        {% for i in "12345" %}
+            <div class="star-icon {% if forloop.counter <= completed_count %}filled{% else %}outline{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+            </div>
+        {% endfor %}
+    </div>
+</div>

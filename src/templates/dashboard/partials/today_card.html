@@ -1,0 +1,31 @@
+{% load static %}
+
+<div class="quest-board-grid">
+    {% for item in items %}
+        <div class="quest-card {{ item.quest.difficulty }}">
+            <div class="quest-card-content">
+                <div class="quest-main-info">
+                    <h4 class="quest-name">{{ item.quest.name }}</h4>
+                    <span class="quest-points">+{{ item.quest.points }}pt</span>
+                </div>
+                
+                <p class="quest-desc">{{ item.quest.description }}</p>
+
+                <div class="quest-footer">
+                    <span class="difficulty-label">{{ item.quest.difficulty|upper }}</span>
+                </div>
+            </div>
+
+            <div class="quest-action">
+                {% if item.id in my_done_ids %}
+                    <span class="done-stamp">CLEAR!</span>
+                {% else %}
+                    <form action="{% url 'quests:complete' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-complete-circle">✓</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
