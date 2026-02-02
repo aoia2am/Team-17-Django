@@ -114,6 +114,8 @@ class TeamService:
             member_count=1,
             total_points=0,
             rank="F",
+            is_active=True,
+            dissolved_at=None,
         )
 
         # owner を所属させる（ここが MVP の前提）
@@ -164,6 +166,11 @@ class TeamService:
         # Team 行をロック（同時参加で max_members を超えないように）
         team = Team.objects.select_for_update().get(id=invite.team_id)
 
+        # チームが論理削除されているなら弾く
+        if not team.is_active:
+            raise ValidationError({"team": "このチームは解散されています"})
+
+
         # 自分がすでにどこかのチーム所属なら弾く
         if TeamMember.objects.filter(user=user).exists():
             raise ValidationError({"user": "すでにチームに所属しています（1ユーザー=1チーム）"})
@@ -192,16 +199,26 @@ class TeamService:
     @transaction.atomic
     def dissolve_team(self, *, team_id: int, actor):
         """
-        チーム解散（物理削除）
+        チーム解散（論理削除）
         - owner のみ実行可
-        - Team を削除すると TeamMember / TeamInvite は CASCADE で消える
         """
         team = Team.objects.select_for_update().get(id=team_id)
 
         if team.owner_id != actor.id:
             raise ValidationError({"permission": "チームの解散はチーム作成者のみ可能です"})
 
-        team.delete()
+        # 論理削除
+        team.is_active = False
+        team.dissolved_at = timezone.now()
+        team.save(update_fields=["is_active", "dissolved_at", "updated_at"])
+
+        #所属だけ外す
+        TeamMember.objects.filter(team=team).delete()
+        TeamInvite.objects.filter(team=team).update(is_active=False)
+
+        # member_countも整合させる
+        team.member_count = 0
+        team.save(update_fields=["member_count", "updated_at"])
 
     # -----------------------------
     # Team points / rank (quests未整備でも作れる “受け皿”)
@@ -257,6 +274,9 @@ class TeamService:
         """
         team = Team.objects.select_for_update().get(id=team_id)
 
+        if not team.is_active:
+            raise ValidationError({"team": "このチームは解散されています"})
+
         if team.owner_id != actor.id:
             raise ValidationError({"permission": "招待コードの再生成はチーム作成者のみ可能です"})
 
@@ -282,6 +302,9 @@ class TeamService:
         """
         team = Team.objects.select_for_update().get(id=team_id)
         
+        if not team.is_active:
+            raise ValidationError({"team": "このチームは解散されています"})
+
         if team.owner_id != actor.id:
             raise ValidationError({"permission": "招待コードの無効化はチーム作成者のみ可能です"})
 

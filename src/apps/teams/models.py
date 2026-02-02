@@ -47,6 +47,8 @@ class Team(models.Model):
 
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    dissolved_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "teams_team"

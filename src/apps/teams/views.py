@@ -212,7 +212,7 @@ def team_detail_view(request, team_id: int):
         messages.error(request,f"他のチームの情報は閲覧できません。")
         return redirect("teams:detail",team_id=my_team_id)
 
-    team=get_object_or_404(Team,id=team_id)
+    team=get_object_or_404(Team,id=team_id, is_active=True)
 
     # 必要ならメンバー一覧もここで取る（readなのでOKとするなら）
     members=team.memberships.select_related("user").order_by("joined_at")
