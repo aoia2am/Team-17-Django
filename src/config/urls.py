@@ -15,7 +15,6 @@ def healthz(request):
     return JsonResponse({"status": "ok"})
 
 urlpatterns = [
-    path("", dashboard_root, name="dashboard_root"),
     path("admin/", admin.site.urls),
     path("healthz/", healthz),
 
