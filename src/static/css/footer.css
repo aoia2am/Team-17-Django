@@ -1,27 +1,50 @@
 /* ===== Footer Only ===== */
 
-body {
-	margin: 0;
-	background-color: #0f1b2d;
-	font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+/* ★追加：フッター高さを変数化（デザインに合わせて調整） */
+:root {
+  --footer-height: 64px; /* だいたい 56〜72px あたりで調整 */
 }
+
+/* ★重要：fixed footerで隠れる分、下に余白を作る（footer側だけで効かせる） */
+body {
+	padding-bottom: calc(var(--footer-height) + env(safe-area-inset-bottom));
+}
+
+/* （※ここにあった body の background/font/margin の上書きは削除推奨）
+body {
+margin: 0;
+background-color: #0f1b2d;
+font-family: ...
+}
+*/
 
 .footer {
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	width: 100%;
+
+  /* ★追加：高さを固定して、余白計算と一致させる */
+    height: var(--footer-height);
 	background-color: #0b1626;
 	border-top: 1px solid #1e2a3a;
 	display: flex;
 	justify-content: space-around;
-	padding: 8px 0;
+
+  /* padding を高さに含めたいので box-sizing を指定 */
+    box-sizing: border-box;
+
+  /* padding は残してOK（見た目維持） */
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+
+  /* ★追加：他要素より前面に出す */
+    z-index: 1000;
 }
 
 .footer-item {
-	text-decoration: none;
-	color: #ffffff;
-	display: flex;
+    text-decoration: none;
+    color: #ffffff;
+    display: flex;
 	flex-direction: column;
 	align-items: center;
 	font-size: 12px;
@@ -49,27 +72,4 @@ body {
 	height: 8px;
 	background-color: red;
 	border-radius: 50%;
-}
-
-/* ===== Tablet & Large Smartphone (max-width: 767px) ===== */
-@media screen and (max-width: 767px) {
-	.header {
-		padding: 12px 14px;
-	}
-
-	.header-inner {
-		gap: 9px;
-	}
-
-	.logo-icon {
-		width: 26px;
-		height: 26px;
-		border-width: 3px;
-	}
-
-	.logo-text {
-		font-size: 15px;
-		padding: 5px 9px;
-		letter-spacing: 0.8px;
-	}
 }

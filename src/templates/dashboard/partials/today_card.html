@@ -18,6 +18,10 @@
     {% for item in items %}
     <div class="quest-card {{ item.quest.difficulty }}">
         
+        {% if item.id in my_done_ids %}
+        <span class="done-stamp">CLEAR!</span>
+        {% endif %}
+
         <div class="quest-card-content">
             <div class="quest-main-info">
                 <h4 class="quest-name">{{ item.quest.name }}</h4>
@@ -31,9 +35,7 @@
 
     
     <div class="quest-action">
-        {% if item.id in my_done_ids %}
-        <span class="done-stamp">CLEAR!</span>
-        {% else %}
+        {% if item.id not in my_done_ids %} 
         <form action="{% url 'quests:complete' item.id %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
