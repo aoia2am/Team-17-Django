@@ -1,0 +1,107 @@
+/* =========================
+Settings (Mobile-first)
+   ========================= */
+
+.settings-container{
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+
+  /* ← 周りの余白（理想に近い） */
+  padding: 28px 18px 110px;
+  box-sizing: border-box;
+
+  color: #ffffff;
+}
+
+/* タイトル：サイズと余白を調整 */
+.settings-title{
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.1;
+
+  margin: 10px 0 22px;
+  color: rgba(255,255,255,0.95);
+}
+
+/* ラベル＋値のブロック */
+.settings-group{
+  margin: 0 0 18px;
+}
+
+/* 黄色いラベル */
+.settings-label{
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 6px 10px;
+
+  border: 1px solid #eaff00;
+  color: #eaff00;
+
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+/* 値の表示（理想は “角丸ほぼなし” に近い） */
+.settings-value{
+  background: rgba(255,255,255,0.95);
+  color: #111;
+
+  padding: 12px 12px;
+  border-radius: 2px;
+  font-size: 16px;
+  line-height: 1.4;
+
+  border: 1px solid rgba(0,0,0,0.10);
+  box-shadow: none;
+
+  /* ✅ ボックス左右余白（ここが本命） */
+  width: auto;              /* calc指定をやめる */
+  margin: 0 28px;           /* ←左右に余白を作る（理想画像の感じ） */
+}
+
+
+/* ログアウト：右寄せ */
+.logout-area{
+  margin-top: 34px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ボタンをリンク風に */
+.logout-button{
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  color: rgba(255,255,255,0.95);
+  font-size: 22px;
+  font-weight: 900;
+
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  cursor: pointer;
+}
+
+.logout-button:hover{
+  opacity: 0.85;
+}
+
+/* ===== 小さめスマホ ===== */
+@media (max-width: 360px){
+  .settings-container{
+    padding: 22px 14px 110px;
+  }
+  .settings-title{
+    font-size: 22px;
+    margin: 8px 0 18px;
+  }
+  .settings-value{
+    font-size: 15px;
+  }
+  .logout-button{
+    font-size: 20px;
+  }
+}

@@ -41,9 +41,11 @@
   padding-right: 56px;
   padding-left: 10px;
 
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  word-break: break-word; 
 }
 
 /* points：右上の小タグに（タイトルと被らない） */

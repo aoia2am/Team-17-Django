@@ -6,37 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>プロフィール画面 | G-BASE</title>
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
-    <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
 </head>
 <body>
 {% include "components/header.html" %}
-<div>
+
+
+<div class="settings-container">
     <h2 class="settings-title">&gt;&gt; Settings</h2>
 
     <div class="settings-group">
         <label class="settings-label">UserName</label>
         <div class="settings-value">
-            {{ user_obj.display_name }}
+        {{ user_obj.display_name }}
     </div>
-</div>
     
+</div>
+
     <div class="settings-group">
         <label class="settings-label">Emails</label>
-    <div class="settings-value">
+        <div class="settings-value">
         {{ user_obj.email }}
     </div>
-</div>
-    
-    <form method="post" 
+    </div>
+
+    <form method="post"
     action="{% url 'accounts:logout' %}"
-    onsubmit="return confirm('ログアウトしますか？');">
+    onsubmit="return confirm('ログアウトしますか？');"
+    class="logout-area">
     {% csrf_token %}
-    <button type="submit">Log out →</button> 
-</form>
+    <button type="submit" class="logout-button">Log out →</button>
+    </form>
 </div>
+
 
 {% include "components/footer.html" %}
-
 </body>
 </html>
