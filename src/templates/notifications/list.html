@@ -32,7 +32,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications | G-BASE</title>
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
-    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notification.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -48,22 +48,23 @@
 
             <div class="notification-list">
                 {% if feed %}
-                    {% for notification in feed %}
-                        <div class="notification-item">
-                            <div class="icon-wrapper">
-                                <span class="notification-icon 
-                                    {% if notification.type == 'member_completed' %}trophy
-                                    {% elif notification.type == 'daily_ready' %}medal
-                                    {% elif notification.type == 'team_rank_up' %}rank
-                                    {% elif notification.type == 'system' %}handshake
-                                    {% endif %}
-                                "></span>
-                            </div>
-
-                            <div class="notification-text">
-                                {{ notification.message }}
-                            </div>
+                    {% for item in feed %}
+                    <div class="notification-item {% if not item.is_read %}unread{% endif %}">
+                        <div class="icon-wrapper">
+                            {% if item.notification.type == 'member_completed' %}
+                            <i class="fa-solid fa-trophy notification-icon"></i>
+                            {% elif item.notification.type == 'daily_ready' %}
+                            <i class="fa-solid fa-medal notification-icon"></i>
+                            {% elif item.notification.type == 'team_rank_up' %}
+                            <i class="fa-solid fa-arrow-up notification-icon"></i>
+                            {% else %}
+                            <i class="fa-solid fa-handshake notification-icon"></i>
+                            {% endif %}
                         </div>
+                        <div class="notification-text">
+                            {{ item.notification.message }}
+                        </div>
+                    </div>
                     {% endfor %}
                 {% else %}
                     <div class="no-notification">

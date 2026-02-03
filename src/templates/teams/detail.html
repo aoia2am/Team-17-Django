@@ -55,11 +55,11 @@
 
     {# 招待コード表示（inviteが無い場合もあるのでガード） #}
     {% if invite and invite.is_active %}
-        <section class="invite">
+        <section class="actions">
             {% if request.user.id == team.owner_id %}
                 <form method="post" action="{% url 'teams:invite_regenerate' team.id %}">
                     {% csrf_token %}
-                    <button type="submit">招待コードを再生成</button>
+                    <button type="submit" class="btn-add">招待コードを再生成</button>
                 </form>
 
             <!---今回は無効化をコメントアウトしておく--->
