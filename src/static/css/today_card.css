@@ -20,7 +20,7 @@
 }
 
 /* difficulty colors */
-.quest-card.easy   { background: rgba(72, 140, 120, 0.45); }
+.quest-card.easy   { background: rgba(90, 235, 170, 1.45); }
 .quest-card.normal { background: rgba(140, 140, 92, 0.45); }
 .quest-card.hard   { background: rgba(132,  92, 92, 0.48); }
 
@@ -80,7 +80,7 @@
   letter-spacing: 0.08em;
   font-size: 28px;
   line-height: 1;
-  opacity: 0.22;
+  opacity: 0.;
   color: rgba(255,255,255,0.8);
   pointer-events: none;
   z-index: 0;
@@ -111,8 +111,8 @@
 }
 
 /* ===== CLEAR overlay (安定版) =====
-   done-stamp を quest-card 直下に移動したので、
-   これで “沈む” / “全面にならない” が消えます
+done-stamp を quest-card 直下に移動したので、
+これで “沈む” / “全面にならない” が消えます
 */
 .done-stamp{
     position: absolute;
