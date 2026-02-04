@@ -10,13 +10,6 @@ body {
 	padding-bottom: calc(var(--footer-height) + env(safe-area-inset-bottom));
 }
 
-/* （※ここにあった body の background/font/margin の上書きは削除推奨）
-body {
-margin: 0;
-background-color: #0f1b2d;
-font-family: ...
-}
-*/
 
 .footer {
 	position: fixed;

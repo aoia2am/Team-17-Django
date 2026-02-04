@@ -109,6 +109,19 @@ body {
     display: block;        /* ブロック要素化 */
 }
 
+.btn-regenerate {
+    background-color: #F7FF78;
+    color: #1a2233;        /* 背景色の濃紺 */
+    border: none;
+    padding: 12px 31px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0;      /* 完全に四角 */
+    display: block;        /* ブロック要素化 */
+}
+
+
 /* --- チームを解散ボタンのエリア --- */
 .danger-zone {
     margin-top: 60px;

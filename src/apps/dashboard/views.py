@@ -131,7 +131,6 @@ def dashboard_index_view(request):
             msg = val[0] if isinstance(val, (list, tuple)) and val else str(val)
             context["quest_locked"] = True
             context["quest_lock_reason"] = msg
-            # flash は好み。うるさければ消してOK
             messages.info(request, msg)
         else:
             _flash_validation_error(request, e, "ダッシュボードの一部を表示できませんでした。")

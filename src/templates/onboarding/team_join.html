@@ -1,9 +1,15 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/team_join.css' %}" />
-<link rel="stylesheet" href="{% static 'css/header.css' %}">
-
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>G-BASE Welcome</title>
+        <link rel="stylesheet" href="{% static 'css/team_join.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    </head>
 {% include "components/header.html" %}
-
+<body>
 <main class="container">
     <h2>&gt;&gt;Join Team</h2>
 
@@ -31,4 +37,5 @@
         <a href="{% url 'teams:create' %}">Create Team</a>
     </div>
 </main>
-
+</body>
+</html>

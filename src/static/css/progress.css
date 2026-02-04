@@ -6,17 +6,19 @@
 
 /* 外側の進捗リング */
 .rank-ring {
-	width: 100%;
-	height: 100%;
+	width: 140px;
+	height: 140px;
 	border-radius: 50%;
-
-	/* 進捗リング（1200 / 1600 = 75%） */
-	background: conic-gradient(#7ef0a1 0deg 270deg, #1e2a3a 270deg 360deg);
-
+  
+	background: conic-gradient(
+	  #7ef0a1 0deg 270deg,
+	  #1e2a3a 270deg 360deg
+	);
+  
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
+  }
 
 /* 内側の白丸 */
 .rank-inner {

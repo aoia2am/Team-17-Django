@@ -1,29 +1,3 @@
-<!-- 
-以下村瀬記述
-{% if feed %}
-{% for notification in feed %}
-  <div class="notification-item">
-    <span class="notification-icon
-      {% if notification.type == 'member_completed' %}trophy
-      {% elif notification.type == 'daily_ready' %}medal
-      {% elif notification.type == 'team_rank_up' %}trophy
-      {% elif notification.type == 'system' %}handshake
-      {% endif %}
-    "></span>
-
-    <span class="notification-text">
-      {{ notification.message }}
-    </span>
-  </div>
-{% endfor %}
-{% else %}
-  <div class="no-notification">
-    通知はまだありません
-  </div>
-{% endif %} -->
-
-
-<!-- 以下小林記述 -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="ja">

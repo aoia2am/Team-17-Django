@@ -73,11 +73,11 @@
 .section-title {
     font-size: 20px;
     font-weight: 800;
-    color: #1e293b;
+    color: #fff;
     margin-bottom: 20px;
 }
 
-/* ✅ スマホ想定：横並びを維持しつつサイズ調整 */
+/* スマホ想定：横並びを維持しつつサイズ調整 */
 @media (max-width: 900px) {
     .dashboard-container{
     padding-top: 10px;

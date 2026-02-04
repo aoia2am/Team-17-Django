@@ -79,7 +79,7 @@
             {% if request.user.id == team.owner_id %}
                 <form method="post" action="{% url 'teams:invite_regenerate' team.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn-add">招待コードを再生成</button>
+                    <button type="submit" class="btn-regenerate">招待コードを再生成</button>
                 </form>
             {% endif %}
         </section>

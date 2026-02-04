@@ -64,6 +64,10 @@
   line-height: 1;
 }
 
+.quest-locked-box{
+  color:#fff;
+}
+
 /* difficulty-label は透かしにするので非表示化 */
 .difficulty-label{
   opacity: 0;
@@ -109,6 +113,8 @@
   font-weight: 900;
   cursor: pointer;
 }
+
+
 
 /* ===== CLEAR overlay (安定版) =====
    done-stamp を quest-card 直下に移動したので、
