@@ -20,9 +20,9 @@
 }
 
 /* difficulty colors */
-.quest-card.easy   { background: rgba(90, 235, 170, 1.45); }
-.quest-card.normal { background: rgba(140, 140, 92, 0.45); }
-.quest-card.hard   { background: rgba(132,  92, 92, 0.48); }
+.quest-card.easy    { background: rgba(20, 200, 90, 1.45); }
+.quest-card.normal { background: rgba(250, 240, 0, 1.45); }
+.quest-card.hard  { background: rgba(220, 20, 80, 1.48); }
 
 /* ===== content ===== */
 .quest-card-content{
