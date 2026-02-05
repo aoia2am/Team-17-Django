@@ -12,6 +12,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* チーム名 */
@@ -48,7 +50,7 @@
     padding: 12px 14px;
     display: grid;
     grid-template-rows: auto auto;
-    gap: 10px;
+    gap: 16px;
 }
 
 /* 星ブロック */
@@ -76,6 +78,14 @@
     color: #fff;
     margin-bottom: 20px;
 }
+
+.top-section,
+.top-right-card,
+.progress-area,
+.progress-info {
+    min-width: 0;
+}
+
 
 /* スマホ想定：横並びを維持しつつサイズ調整 */
 @media (max-width: 900px) {

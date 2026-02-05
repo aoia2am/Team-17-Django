@@ -16,11 +16,15 @@ body {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	min-width: 0;
 }
 
 .logo-image {
 	height: 32px;     /* ← スマホ基準 */
 	width: auto;      /* 縦基準で比率維持 */
+	display: block;
+	max-width: 100%;
+	flex-shrink: 1;
 	display: block;
 }
 
