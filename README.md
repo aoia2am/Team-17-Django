@@ -2,6 +2,11 @@
 
 Tech jam2026冬 反保 福田 麻衣 新 村瀬
 
+# 担当箇所（小林麻衣）
+フロントエンド：HTML＆CSS(チーム画面,ダッシュボード)
+バックエンド：teamsの機能のviews.pyの実装
+その他: GitHubでのプルリクエスト作成
+
 ## Environment
 
 - Python: 3.12.x
